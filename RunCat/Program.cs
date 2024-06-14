@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using System.Resources;
 using System.ComponentModel;
+using System.IO;
 
 namespace RunCat
 {
@@ -53,7 +54,7 @@ namespace RunCat
         private ToolStripMenuItem runnerMenu;
         private ToolStripMenuItem themeMenu;
         private ToolStripMenuItem startupMenu;
-        private ToolStripMenuItem runnerSpeedLimit;
+        private ToolStripMenuItem runnerSpeedLimit;        
         private NotifyIcon notifyIcon;
         private string runner = "";
         private int current = 0;
@@ -65,7 +66,7 @@ namespace RunCat
         private Icon[] icons;
         private Timer animateTimer = new Timer();
         private Timer cpuTimer = new Timer();
-
+        private const string CustomFolderName = "\\RunCat\\Custom";
 
         public RunCatApplicationContext()
         {
@@ -93,6 +94,10 @@ namespace RunCat
                 new ToolStripMenuItem("Horse", null, SetRunner)
                 {
                     Checked = runner.Equals("horse")
+                },
+                new ToolStripMenuItem("Custom", null, SetRunner)
+                {
+                    Checked = runner.Equals("custom")                    
                 }
             });
 
@@ -220,6 +225,24 @@ namespace RunCat
             else if (runner.Equals("horse")) 
             {
                 capacity = 14;
+            }else if (runner.Equals("custom"))
+            {
+                string fullPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + CustomFolderName;
+                if (!Directory.Exists(fullPath))
+                {
+                    Directory.CreateDirectory(fullPath);                    
+                };                
+                string searchPattern = $"{prefix}_{runner}_*.ico"; // 搜索所有文件
+
+                string[] files = Directory.GetFiles(fullPath, searchPattern);
+                capacity = files.Length;
+                List<Icon> clist = new List<Icon>(capacity);
+                for (int i = 0; i < capacity; i++)
+                {
+                    clist.Add(Icon.ExtractAssociatedIcon(($"{fullPath}//{prefix}_{runner}_{i}.ico")));
+                }
+                icons = clist.ToArray();
+                return;
             }
             List<Icon> list = new List<Icon>(capacity);
             for (int i = 0; i < capacity; i++)
@@ -336,6 +359,7 @@ namespace RunCat
 
         private void AnimationTick(object sender, EventArgs e)
         {
+            if (icons.Length == 0) return;
             if (icons.Length <= current) current = 0;
             notifyIcon.Icon = icons[current];
             current = (current + 1) % icons.Length;
