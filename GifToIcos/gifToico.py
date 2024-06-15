@@ -1,5 +1,6 @@
 from PIL import Image
 import os
+import sys
 
 def convert_gif_to_ico(gif_path, output_dir):
     img = Image.open(gif_path)
@@ -17,5 +18,11 @@ def convert_gif_to_ico(gif_path, output_dir):
         output_path = os.path.join(output_dir, f'light_custom_{i-1}.ico')
         img.save(output_path, 'ICO')
 
-# Usage
-convert_gif_to_ico('congadoge.gif', 'output')
+
+def main():    
+    gitPath = sys.argv[1]
+    targetFolder = sys.argv[2]
+    convert_gif_to_ico(gitPath, targetFolder)
+
+if __name__ == "__main__":
+    main()
