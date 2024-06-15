@@ -305,6 +305,14 @@ namespace RunCat
 
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
+                        //Clear Custrom Folder icos
+                        string folderPath = customFolderPath;                        
+                        string[] files = Directory.GetFiles(folderPath);                        
+                        foreach (string file in files)
+                        {
+                            File.Delete(file);
+                        }
+
                         string selectedGifFilePath = openFileDialog.FileName;
                         string arguments = $"{selectedGifFilePath} {customFolderPath}";
 
