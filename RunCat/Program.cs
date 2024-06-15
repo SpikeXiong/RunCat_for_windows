@@ -241,7 +241,7 @@ namespace RunCat
             }
             else if (runner.Equals("custom"))
             {
-                SetCustomIcons(prefix);
+                SetCustomIcons("light");
                 return;
             }
             List<Icon> list = new List<Icon>(capacity);
