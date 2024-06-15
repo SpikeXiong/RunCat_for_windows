@@ -29,6 +29,7 @@
 	<GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
 	<OutputPath></OutputPath>
 	<PlatformTarget>ARM64</PlatformTarget>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
