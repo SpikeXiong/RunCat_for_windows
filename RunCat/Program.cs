@@ -97,7 +97,7 @@ namespace RunCat
                 {
                     Checked = runner.Equals("horse")
                 },
-                new ToolStripMenuItem("Custom", null, SetRunner)
+                new ToolStripMenuItem("Custom", null, SetCustromRunner)
                 {
                     Checked = runner.Equals("custom")                    
                 }
@@ -181,6 +181,7 @@ namespace RunCat
 
             current = 1;
         }
+       
         private string CustomFolderPath()
         {
             string fullPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + CUSTOM_FOLDER_NAME;
@@ -284,6 +285,40 @@ namespace RunCat
             SetIcons();
         }
 
+        private void SetCustromRunner(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                
+                string programPath = AppDomain.CurrentDomain.BaseDirectory + "gifToico.exe";
+                if (!File.Exists(programPath))
+                {                   
+                    MessageBox.Show($"gifToico.exe not found, Use the '*.ico' files under {customFolderPath}");
+                    SetRunner(sender, e);
+                }
+                else
+                {
+                    openFileDialog.Title = "Select a GIF file";
+                    openFileDialog.Filter = "GIF Files|*.gif";
+                    openFileDialog.FilterIndex = 1;
+                    openFileDialog.RestoreDirectory = true;
+
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string selectedGifFilePath = openFileDialog.FileName;
+                        string arguments = $"{selectedGifFilePath} {customFolderPath}";
+
+                        Process.Start(new ProcessStartInfo(programPath, arguments)
+                        {
+                            UseShellExecute = true,
+                            CreateNoWindow = true,
+                        }).WaitForExit();
+                        SetRunner(sender, e);
+                    }
+                }               
+            }
+        }        
+
         private void SetThemeIcons(object sender, EventArgs e)
         {
             UpdateCheckedState((ToolStripMenuItem)sender, themeMenu);
@@ -340,6 +375,7 @@ namespace RunCat
             manualTheme = "dark";
             SetIcons();
         }
+        
         private void UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
         {
             if (e.Category == UserPreferenceCategory.General) UpdateThemeIcons();
@@ -411,6 +447,7 @@ namespace RunCat
             _ = interval;
             CPUTickSpeed();
         }
+        
         private void ObserveCPUTick(object sender, EventArgs e)
         {
             CPUTick();
