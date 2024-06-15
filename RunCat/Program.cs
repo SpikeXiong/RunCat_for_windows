@@ -66,13 +66,15 @@ namespace RunCat
         private Icon[] icons;
         private Timer animateTimer = new Timer();
         private Timer cpuTimer = new Timer();
-        private const string CustomFolderName = "\\RunCat\\Custom";
+        private const string CUSTOM_FOLDER_NAME = "\\RunCat\\Custom";
+        private string customFolderPath;
 
         public RunCatApplicationContext()
         {
             UserSettings.Default.Reload();
             runner = UserSettings.Default.Runner;
             manualTheme = UserSettings.Default.Theme;
+            customFolderPath = CustomFolderPath();
 
             Application.ApplicationExit += new EventHandler(OnApplicationExit);
 
@@ -179,6 +181,16 @@ namespace RunCat
 
             current = 1;
         }
+        private string CustomFolderPath()
+        {
+            string fullPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + CUSTOM_FOLDER_NAME;
+            if (!Directory.Exists(fullPath))
+            {
+                Directory.CreateDirectory(fullPath);
+            };
+            return fullPath;
+        }
+
         private void OnApplicationExit(object sender, EventArgs e)
         {
             UserSettings.Default.Runner = runner;
@@ -225,23 +237,10 @@ namespace RunCat
             else if (runner.Equals("horse")) 
             {
                 capacity = 14;
-            }else if (runner.Equals("custom"))
+            }
+            else if (runner.Equals("custom"))
             {
-                string fullPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + CustomFolderName;
-                if (!Directory.Exists(fullPath))
-                {
-                    Directory.CreateDirectory(fullPath);                    
-                };                
-                string searchPattern = $"{prefix}_{runner}_*.ico"; // 搜索所有文件
-
-                string[] files = Directory.GetFiles(fullPath, searchPattern);
-                capacity = files.Length;
-                List<Icon> clist = new List<Icon>(capacity);
-                for (int i = 0; i < capacity; i++)
-                {
-                    clist.Add(Icon.ExtractAssociatedIcon(($"{fullPath}//{prefix}_{runner}_{i}.ico")));
-                }
-                icons = clist.ToArray();
+                SetCustomIcons(prefix);
                 return;
             }
             List<Icon> list = new List<Icon>(capacity);
@@ -250,6 +249,22 @@ namespace RunCat
                 list.Add((Icon)rm.GetObject($"{prefix}_{runner}_{i}"));
             }
             icons = list.ToArray();
+        }
+
+        private void SetCustomIcons(string prefix)
+        {           
+            if (!Directory.Exists(customFolderPath))
+            {
+                Directory.CreateDirectory(customFolderPath);
+            };
+            string searchPattern = $"{prefix}_{runner}_*.ico"; // 搜索所有文件
+            string[] files = Directory.GetFiles(customFolderPath, searchPattern);
+            int capacity = files.Length;
+            List<Icon> list = new List<Icon>(capacity);
+            for (int i = 0; i < capacity; i++)
+                list.Add(Icon.ExtractAssociatedIcon(($"{customFolderPath}//{prefix}_{runner}_{i}.ico")));
+            icons = list.ToArray();
+            return;
         }
 
         private void UpdateCheckedState(ToolStripMenuItem sender, ToolStripMenuItem menu)
