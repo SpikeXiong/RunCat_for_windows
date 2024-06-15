@@ -22,6 +22,7 @@
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
 	<OutputPath></OutputPath>
     <PlatformTarget>x64</PlatformTarget>
+	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
